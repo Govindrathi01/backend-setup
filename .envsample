@@ -1,0 +1,2 @@
+PORT=8000
+MONGO_URL=mongodb+srv://Govind:<Welcome@01>@cluster0.x3lm4xp.mongodb.net
