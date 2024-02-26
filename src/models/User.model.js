@@ -1,7 +1,11 @@
 import mongoose,{Schema} from "mongoose";
-import { Jwt } from "jsonwebtoken";
+// import {jwt} from "jsonwebtoken";
+// import pkg from 'jsonwebtoken';
+// const {jwt} = pkg;
+import jwt from "jsonwebtoken" ;
 import bcrypt from "bcrypt";
-const UserScheme=new Schema({
+
+const UserSchema = new Schema({
     username: {
         type: String,
         required: true,
@@ -24,11 +28,11 @@ const UserScheme=new Schema({
         index: true
     },
     avatar: {
-        type: String, // cloudinary url
+        type: String, 
         required: true,
     },
     coverImage: {
-        type: String, // cloudinary url
+        type: String,
     },
     watchHistory: [
         {
@@ -47,18 +51,20 @@ const UserScheme=new Schema({
 },
 {
     timestamps: true
-}
+})
 
-)
-UserScheme.pre("save",async function(next){
+UserSchema.pre("save",async function(next){
     if(!this.isModified("password")) return next();
-    this.password = bcrypt.hash(this.password,10)
+    this.password =  await bcrypt.hash(this.password,10)
     next()
 })
-UserScheme.method.ispasswordCorrect =async function(password){
-    return await bcrypt.campare(password,this.password)
+
+
+UserSchema.methods.ispasswordCorrect =async function(password){
+    return await bcrypt.compare(password,this.password)
 }
-userSchema.methods.generateAccessToken = function(){
+
+UserSchema.methods.generateAccessToken = function(){
     return jwt.sign(
         {
             _id: this._id,
@@ -72,7 +78,8 @@ userSchema.methods.generateAccessToken = function(){
         }
     )
 }
-userSchema.methods.generateRefreshToken = function(){
+
+UserSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id,
@@ -84,4 +91,5 @@ userSchema.methods.generateRefreshToken = function(){
         }
     )
 }
-export const User = mongoose.model("User", UserScheme)
+
+export const User = mongoose.model("User", UserSchema);
